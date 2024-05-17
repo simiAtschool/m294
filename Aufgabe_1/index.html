@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Sieve Eratosthenes</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
+</head>
+
+<body>
+    <button id="1" onclick="test()">Test</button>
+    <div style="display: flex; flex-direction: column; width: 200px; margin: 0 0 20px 0;">
+        <input id="inputSieve" type="number">
+        <button id="submit" onclick="calculate()">Get primes</button>
+    </div>
+    <div style="display: flex; flex-direction: column; width: 200px; margin: 0 0 20px 0;">
+        <input id="input">
+        <button id="submit" onclick="fetchAsync()">Get primes</button>
+    </div>
+    <div>
+        <button onclick="getMedien()">Get Medien</button>
+        <table>
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Titel</th>
+                    <th>Autor</th>
+                </tr>
+            </thead>
+            <tbody id="tbody">
+
+            </tbody>
+        </table>
+    </div>
+</body>
+<script src='sieb_des_eratosthenes.js'></script>
+
+</html>

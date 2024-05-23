@@ -24,13 +24,13 @@
     </header>
 
     <main>
-        <nav id="nav" style="display: none;">
+        <nav id="nav" style="display: none;" onmouseleave="openMenu()">
             <button class="btn" onclick="linkToKundeTabelle()">Kundentabelle</button>
-            <button class="btn" onclick="linkToKundeErstellen()">Kunde erstellen</button>
+            <button class="btn" onclick="linkToKundeErstellen(null)">Kunde erstellen</button>
             <button class="btn" onclick="linkToMediumTabelle()">Medientabelle</button>
-            <button class="btn" onclick="linkToMediumErstellen()">Medium erstellen</button>
+            <button class="btn" onclick="linkToMediumErstellen(null)">Medium erstellen</button>
             <button class="btn" onclick="linkToAusleiheTabelle()">Ausleihetabelle</button>
-            <button class="btn" onclick="linkToAusleiheErstellen()">Ausleihe erstellen</button>
+            <button class="btn" onclick="linkToAusleiheErstellen(null)">Ausleihe erstellen</button>
         </nav>
         <!-- Search and things -->
 
@@ -40,7 +40,7 @@
                     <input type="text">
                     <input type="text">
                 </div>
-                <button>Erstellen</button>
+                <button id="btnCreate">Erstellen</button>
             </div>
             <table>
                 <thead id="tableHead"></thead>
@@ -50,16 +50,16 @@
         
         <div id="mainEdit" class="main centerItems notVisible">
             <form id="form" style="width: 50%;">
-<!--                 <div class="row">
+                <!-- <div class="row">
                 <label for="a">Hallo</label>
                 <input id="a" name="a" type="text" required>
             </div>
             <div class="row">
                 <label for="b">Hallo</label>
                 <input id="b" name="b" type="number" max="65535" required>
-            </div> -->
-            <!-- <div class="row">
-                <button id="sub" type="">Submit</button>
+            </div>
+            <div class="row">
+                <button id="sub" type="button">Submit</button>
             </div> -->
             </form>
             

@@ -1,3 +1,6 @@
+const ausleiheHeader = ["Medium-ID", "Ausleihe-ID", "Ausleihedatum", "Rückgabedatum", "", ""];
+const mediumHeader = ["ID", "Titel", "Autor", "", ""];
+
 function createHeaderCell(text) {
     const cell = document.createElement("th");
     cell.appendChild(document.createTextNode(text ? text : ""));
@@ -11,13 +14,9 @@ function constructAusleiheTable(data) {
     }
     softReset();
 
+    btnCreate.addEventListener("click", () => linkToAusleiheErstellen());
     const row = document.createElement("tr");
-    row.appendChild(createHeaderCell("Medium-ID"));
-    row.appendChild(createHeaderCell("Ausleihe-ID"));
-    row.appendChild(createHeaderCell("Ausleihedatum"));
-    row.appendChild(createHeaderCell("Rückgabedatum"));
-    row.appendChild(createHeaderCell());
-    row.appendChild(createHeaderCell());
+    ausleiheHeader.forEach(element => row.appendChild(createHeaderCell(element)));
     tableHead.appendChild(row);
 
     // creating all cells
@@ -54,9 +53,9 @@ function getAusleiheText(obj, cellNum) {
         case 4:
             return document.createTextNode(addDays(date, obj.ausleihedauer ? obj.ausleihedauer : 14).toLocaleDateString())
         case 5:
-            editBtn();
+            return editBtn(obj, linkToAusleiheErstellen);
         case 6:
-            deleteBtn();
+            return deleteBtn(obj, linkToAusleiheTabelle, "ausleihe");
         default:
             return document.createTextNode("");
     }
@@ -70,12 +69,9 @@ function constructMediumTable(data) {
 
     softReset();
 
+    btnCreate.addEventListener("click", () => linkToMediumErstellen());
     const row = document.createElement("tr");
-    row.appendChild(createHeaderCell("ID"));
-    row.appendChild(createHeaderCell("Titel"));
-    row.appendChild(createHeaderCell("Autor"));
-    row.appendChild(createHeaderCell());
-    row.appendChild(createHeaderCell());
+    mediumHeader.forEach(element => row.appendChild(createHeaderCell(element)));
     tableHead.appendChild(row);
 
     // creating all cells
@@ -105,17 +101,9 @@ function getMediumText(obj, cellNum) {
         case 3:
             return document.createTextNode(obj.autor ? obj.autor : "");
         case 4:
-            const editBtn = document.createElement("button");
-            editBtn.textContent = "edit";
-            editBtn.classList.add("btn", "material-symbols-outlined");
-            editBtn.addEventListener("click", () => window.location.assign(`../erstellen/?${obj.id}`));
-            return editBtn;
+            return editBtn(obj, linkToMediumErstellen);
         case 5:
-            const deleteBtn = document.createElement("button");
-            deleteBtn.textContent = "delete";
-            deleteBtn.classList.add("btn", "material-symbols-outlined");
-            deleteBtn.addEventListener("click", () => window.location.assign(`../erstellen/?${obj.id}`));
-            return deleteBtn;
+            return deleteBtn(obj, linkToMediumTabelle, "medium");
         default:
             return document.createTextNode("");
     }
@@ -125,14 +113,23 @@ function editBtn(obj, linkFunction) {
     const editBtn = document.createElement("button");
     editBtn.textContent = "edit";
     editBtn.classList.add("btn", "material-symbols-outlined");
-    editBtn.addEventListener("click", () => {linkFunction(obj)});
+    editBtn.addEventListener("click", () => { linkFunction(obj) });
     return editBtn;
 }
 
-function deleteBtn() {
+function deleteBtn(obj, ressource) {
     const deleteBtn = document.createElement("button");
     deleteBtn.textContent = "delete";
     deleteBtn.classList.add("btn", "material-symbols-outlined");
-    deleteBtn.addEventListener("click", () => {linkFunction(obj)});
+    deleteBtn.addEventListener("click", () => { confirmAndDelete(obj, ressource) });
     return deleteBtn;
+}
+
+async function confirmAndDelete(obj, ressource) {
+    result = await confirm("Wollen Sie wirklich diesen Eintrag löschen?").valueOf();
+    if(result) {
+        httpDelete(`${rootDir}/${ressource}`, obj.id)
+        .catch(error => console.error(error))
+        .then(() => showTable(ressource));
+    }
 }

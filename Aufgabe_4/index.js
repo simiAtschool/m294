@@ -4,6 +4,7 @@ const editContent = document.getElementById("mainEdit");
 const tableHead = document.getElementById("tableHead");
 const tableBody = document.getElementById("tableBody");
 const form = document.getElementById("form");
+const btnCreate = document.getElementById("btnCreate");
 const mediumAttributes = [
     { name: "titel", type: "text", required: true },
     { name: "autor", type: "text", required: true },
@@ -14,33 +15,35 @@ const mediumAttributes = [
 ]
 
 const ausleiheAttributes = [
-    { name: "medium.id", type: "number", required: true },
-    { name: "kunde.id", type: "number", required: true },
+    { name: "medium-Id", var: "medium.id", type: "number", required: true, readonly: true },
+    { name: "kunden-Id", var: "kunde.id", type: "number", required: true, readonly: true },
 ]
 
-const element = openMenu;
+function extractFormData() {
+    return Object.fromEntries(new FormData(form).entries().filter(([k, v]) => v != null || v != ''));
+}
 
-function submit(event) {
+function submit(event, ressource, id) {
     event.preventDefault();
-    httpPost(`${rootDir}/medium`, Object.fromEntries(new FormData(form).entries().filter(([k, v]) => v != null || v != '')))
-        .catch(error => console.error(error)).then(() => showTable('medium'));
+    if(!id) {
+            httpPost(`${rootDir}/${ressource}`, extractFormData())
+        .catch(error => console.error(error))
+        .then(() => showTable(ressource));
+    } else {
+        httpPut(`${rootDir}/${ressource}`, extractFormData())
+        .catch(error => console.error(error))
+        .then(() => showTable(ressource));
+    }
 
-    // console.log(
 
-    // );
-    // fetch()
 }
 
 function openMenu() {
     navigation.style.display = navigation.style.display && navigation.style.display === "none" ? "flex" : "none";
 }
 
-// function linkToHome() {
-//     window.location.assign(rootDir);
-// }
-
 function softReset() {
-    form.removeEventListener("submit", submit);
+    form.removeEventListener("submit", form);
     form.replaceChildren();
     tableHead.replaceChildren();
     tableBody.replaceChildren();
@@ -53,41 +56,52 @@ function reset() {
 }
 
 function showTable(ressource) {
-
-
-    if (ressource) {
-        if (ressource === "ausleihe") {
-        } else if (ressource === "kunde") {
-            const row = document.createElement("tr");
-            row.appendChild(createHeaderCell("ID"));
-            row.appendChild(createHeaderCell("Titel"));
-            row.appendChild(createHeaderCell("Autor"));
-            row.appendChild(createHeaderCell());
-            row.appendChild(createHeaderCell());
-            tableHead.appendChild(row);
-        } else if (ressource === "medium") {
-        }
-    } else {
-
+    if (!ressource) {
+        return;
+    }
+    if (ressource === "ausleihe") {
+        linkToAusleiheTabelle();
+    } else if (ressource === "kunde") {
+        linkToKundeTabelle();
+    } else if (ressource === "medium") {
+        linkToMediumTabelle();
     }
 }
 
-function installButtons(edit, deleteFunc, link) {
+function showEdit(ressource) {
+    if (!ressource) {
+        return;
+    }
+    if (ressource === "ausleihe") {
+        linkToAusleiheErstellen();
+    } else if (ressource === "kunde") {
+        linkToKundeErstellen();
+    } else if (ressource === "medium") {
+        linkToMediumErstellen();
+    }
+}
+
+function installButtons(obj, ressource) {
     const row = document.createElement("div");
     row.classList.add("row");
     let saveBtn = document.createElement("button");
     let cancelBtn = document.createElement("button");
-    
+
     saveBtn.setAttribute("type", "submit");
-    saveBtn.classList.add("btnSuccess");
-    cancelBtn.addEventListener("click", link);
-    cancelBtn.classList.add("btnDanger");
+    saveBtn.classList.add("btn", "btnSuccess");
+    saveBtn.textContent = "Speichern";
+    cancelBtn.addEventListener("click", () => showTable(ressource));
+    cancelBtn.setAttribute("type", "button");
+    cancelBtn.classList.add("btn", "btnDanger");
+    cancelBtn.textContent = "Abbrechen";
 
     row.appendChild(saveBtn);
-    if (edit) { 
+    if (obj && !(obj instanceof PointerEvent)) {
         let deleteBtn = document.createElement("button");
-        deleteBtn.addEventListener("click", deleteFunc);
-        deleteBtn.classList.add("btnDanger");
+        deleteBtn.addEventListener("click", () => confirmAndDelete(ressource === "ausleihe" ? obj?.medium?.id : obj?.id));
+        deleteBtn.setAttribute("type", "button");
+        deleteBtn.classList.add("btn", "btnDanger");
+        deleteBtn.textContent = "Löschen";
         row.appendChild(deleteBtn);
     }
     row.appendChild(cancelBtn);
@@ -98,26 +112,8 @@ function installButtons(edit, deleteFunc, link) {
 function linkToAusleiheErstellen(obj) {
     reset();
     editContent.classList.remove("notVisible");
-
-    for (attribute of ausleiheAttributes) {
-        const row = document.createElement("div");
-        const label = document.createElement("label")
-        const input = document.createElement("input");
-        row.classList.add("row");
-        for (const [key, value] of Object.entries(attribute)) {
-            if (key === "name") {
-                input.id = value
-                input.name = value;
-                label.appendChild(document.createTextNode(value));
-                label.htmlFor = value;
-            } else {
-                input.setAttribute(key, value.toString());
-            }
-        }
-        row.appendChild(label);
-        row.appendChild(input);
-        form.appendChild(row);
-    }
+    createForm(obj, form, ausleiheAttributes);
+    installButtons(obj, "ausleihe");
 }
 
 function linkToAusleiheTabelle() {
@@ -137,10 +133,19 @@ function linkToKundeTabelle() {
 function linkToMediumErstellen(obj) {
     reset();
     editContent.classList.remove("notVisible");
+    createForm(obj, form, mediumAttributes);
+    installButtons(obj, "medium");
+}
 
-    form.addEventListener('submit', submit);
+function linkToMediumTabelle() {
+    reset();
+    tableContent.classList.remove("notVisible");
+    httpGet(`${rootDir}/medium`, constructMediumTable);
+}
 
-    for (attribute of mediumAttributes) {
+function createForm(obj, form, attributes) {
+    form.addEventListener("submit", submit);
+    for (attribute of attributes) {
         const row = document.createElement("div");
         const label = document.createElement("label");
         const input = document.createElement("input");
@@ -151,23 +156,28 @@ function linkToMediumErstellen(obj) {
                 input.name = value;
                 label.appendChild(document.createTextNode(value));
                 label.htmlFor = value;
+            } else if (key === "readonly") {
+                if (obj) {
+                    input.readOnly = value
+                }
+            // } {
+
+            } else if (key === "var") {
+                continue;
             } else {
                 input.setAttribute(key, value.toString());
             }
         }
+        try {
+            input.value = obj[attribute.var] ? obj[attribute.var] : obj[attribute.name] ? obj[attribute.name] : "";
+        } catch (error) {}
+
         row.appendChild(label);
         row.appendChild(input);
         form.appendChild(row);
     }
-    // installButtons(
-    //     edit, 
-    // );
 }
 
-function linkToMediumTabelle() {
-    reset();
-    tableContent.classList.remove("notVisible");
-    httpGet(`${rootDir}/medium`, constructMediumTable);
+function getValueByString(attrArr = []) {
+    if(attrArr.length <= 0)
 }
-
-

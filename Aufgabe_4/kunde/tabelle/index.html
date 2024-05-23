@@ -15,7 +15,7 @@
     <header id="header" class="space-between">
         <h1 style="margin: 0;">Applikation</h1>
 
-        <button class="vCenterButton invisibleButton" onclick="openMenu()">
+        <button class="vCenterButton btn" onclick="openMenu()">
             <span class="material-symbols-outlined">
                 menu
             </span>
@@ -25,15 +25,15 @@
 
     <main>
         <nav id="nav" style="display: none;">
-            <button class="invisibleButton" onclick="linkToKundeTabelle()">Kundentabelle</button>
-            <button class="invisibleButton" onclick="linkToKundeErstellen()">Kunde erstellen</button>
-            <button class="invisibleButton" onclick="linkToMediumTabelle()">Medientabelle</button>
-            <button class="invisibleButton" onclick="linkToMediumErstellen()">Medium erstellen</button>
-            <button class="invisibleButton" onclick="linkToAusleiheTabelle()">Ausleihetabelle</button>
-            <button class="invisibleButton" onclick="linkToAusleiheErstellen()">Ausleihe erstellen</button>
+            <button class="btn" onclick="linkToKundeTabelle()">Kundentabelle</button>
+            <button class="btn" onclick="linkToKundeErstellen()">Kunde erstellen</button>
+            <button class="btn" onclick="linkToMediumTabelle()">Medientabelle</button>
+            <button class="btn" onclick="linkToMediumErstellen()">Medium erstellen</button>
+            <button class="btn" onclick="linkToAusleiheTabelle()">Ausleihetabelle</button>
+            <button class="btn" onclick="linkToAusleiheErstellen()">Ausleihe erstellen</button>
         </nav>
         <!-- Search and things -->
-        <div id="main" class="main">
+        <div id="mainTable" class="main">
             <div class="space-between">
                 <div>
                     <input type="text">
@@ -42,9 +42,13 @@
                 <button>Erstellen</button>
             </div>
             <table>
-                <thead></thead>
-                <tbody id="er"></tbody>
+                <thead id="tableHead"></thead>
+                <tbody id="tableBody"></tbody>
             </table>
+        </div>
+        
+        <div id="mainEdit" class="main">
+
         </div>
     </main>
 

@@ -15,7 +15,7 @@
     <header id="header" class="space-between">
         <h1 style="margin: 0;">Applikation</h1>
 
-        <button class="vCenterButton invisibleButton" onclick="openMenu()">
+        <button class="vCenterButton btn" onclick="openMenu()">
             <span class="material-symbols-outlined">
                 menu
             </span>
@@ -23,24 +23,55 @@
 
     </header>
 
-    <div>
+    <main>
         <nav id="nav" style="display: none;">
-            <button class="invisibleButton" onclick="linkToKundeTabelle()">Kundentabelle</button>
-            <button class="invisibleButton" onclick="linkToKundeErstellen()">Kunde erstellen</button>
-            <button class="invisibleButton" onclick="linkToMediumTabelle()">Medientabelle</button>
-            <button class="invisibleButton" onclick="linkToMediumErstellen()">Medium erstellen</button>
-            <button class="invisibleButton" onclick="linkToAusleiheTabelle()">Ausleihetabelle</button>
-            <button class="invisibleButton" onclick="linkToAusleiheErstellen()">Ausleihe erstellen</button>
+            <button class="btn" onclick="linkToKundeTabelle()">Kundentabelle</button>
+            <button class="btn" onclick="linkToKundeErstellen()">Kunde erstellen</button>
+            <button class="btn" onclick="linkToMediumTabelle()">Medientabelle</button>
+            <button class="btn" onclick="linkToMediumErstellen()">Medium erstellen</button>
+            <button class="btn" onclick="linkToAusleiheTabelle()">Ausleihetabelle</button>
+            <button class="btn" onclick="linkToAusleiheErstellen()">Ausleihe erstellen</button>
         </nav>
         <!-- Search and things -->
-        <div id="main" class="main">
-            Welcome!
+
+        <div id="mainTable" class="main notVisible">
+            <div class="space-between">
+                <div>
+                    <input type="text">
+                    <input type="text">
+                </div>
+                <button>Erstellen</button>
+            </div>
+            <table>
+                <thead id="tableHead"></thead>
+                <tbody id="tableBody"></tbody>
+            </table>
         </div>
-    </div>
+        
+        <div id="mainEdit" class="main centerItems notVisible">
+            <form id="form" style="width: 50%;">
+<!--                 <div class="row">
+                <label for="a">Hallo</label>
+                <input id="a" name="a" type="text" required>
+            </div>
+            <div class="row">
+                <label for="b">Hallo</label>
+                <input id="b" name="b" type="number" max="65535" required>
+            </div> -->
+            <!-- <div class="row">
+                <button id="sub" type="">Submit</button>
+            </div> -->
+            </form>
+            
+        </div>
+
+    </main>
 
 
 
 </body>
+<script src="tables.js"></script>
+<script src="requests.js"></script>
 <script src="index.js"></script>
 
 </html>

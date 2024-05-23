@@ -85,8 +85,8 @@ async function getMedien() {
 }
 
 function fillTable(data) {
-    const tblBody = document.getElementById("tbody");
-    tblBody.replaceChildren();
+    const tableBody = document.getElementById("tbody");
+    tableBody.replaceChildren();
 
     if(!(data instanceof Array)) {
         return;
@@ -115,7 +115,7 @@ function fillTable(data) {
         row.appendChild(cell3);
 
         // add the row to the end of the table body
-        tblBody.appendChild(row);
+        tableBody.appendChild(row);
     }
 
 }
@@ -128,7 +128,7 @@ function test() {
 /* function generateTable() {
     // creates a <table> element and a <tbody> element
     const tbl = document.createElement("table");
-    const tblBody = document.createElement("tbody");
+    const tableBody = document.createElement("tbody");
 
     // creating all cells
     for (let i = 0; i < 2; i++) {
@@ -146,11 +146,11 @@ function test() {
         }
 
         // add the row to the end of the table body
-        tblBody.appendChild(row);
+        tableBody.appendChild(row);
     }
 
     // put the <tbody> in the <table>
-    tbl.appendChild(tblBody);
+    tbl.appendChild(tableBody);
     // appends <table> into <body>
     document.body.appendChild(tbl);
     // sets the border attribute of tbl to '2'

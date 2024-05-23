@@ -14,13 +14,13 @@ function addDays(date, days) {
 }
 
 function fillTable(data) {
-    const tblBody = document.getElementById("ausleiheTabelleBody");
+    const tableBody = document.getElementById("ausleiheTabelleBody");
 
     if (!(data instanceof Array)) {
         return;
     }
 
-    tblBody.replaceChildren();
+    tableBody.replaceChildren();
 
     // creating all cells
     for (let obj of data) {
@@ -36,7 +36,7 @@ function fillTable(data) {
         }
 
         // add the row to the end of the table body
-        tblBody.appendChild(row);
+        tableBody.appendChild(row);
     }
 
 }
@@ -55,13 +55,13 @@ function getText(obj, cellNum) {
         case 5:
             const editBtn = document.createElement("button");
             editBtn.textContent = "edit";
-            editBtn.classList.add("invisibleButton", "material-symbols-outlined");
+            editBtn.classList.add("btn", "material-symbols-outlined");
             editBtn.addEventListener("click", () => window.location.assign(`../erstellen/?${obj.medium.id}`));
             return editBtn;
         case 6:
             const deleteBtn = document.createElement("button");
             deleteBtn.textContent = "delete";
-            deleteBtn.classList.add("invisibleButton", "material-symbols-outlined");
+            deleteBtn.classList.add("btn", "material-symbols-outlined");
             deleteBtn.addEventListener("click", () => window.location.assign(`../erstellen/?${obj.medium.id}`));
             return deleteBtn;
         default:

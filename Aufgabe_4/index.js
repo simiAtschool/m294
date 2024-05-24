@@ -22,18 +22,42 @@ const ausleiheAttributes = [
 ]
 
 const kundeAttributes = [
-    { name: "titel", type: "text", required: true },
-    { name: "autor", type: "text", required: true },
-    { name: "genre", type: "text" },
-    { name: "altersfreigabe", type: "number", min: 0, max: 127 },
-    { name: "isbn", type: "number", min: 0 },
-    { name: "standortcode", type: "text" },
+    { name: "vorname", type: "text", required: true },
+    { name: "nachname", type: "text", required: true },
+    { name: "email", type: "text", required: true },
+    { name: "geburtstag", type: "date" },
+    { name: "adresse", var: "adresse.adresse", type: "text", required: true },
+    { name: "Ort", var: "adresse.ort", type: "text", required: true },
+    { name: "Postleitzahl", var: "adresse.zip", type: "text", required: true },
 ]
 
+/**
+ * Extracts values from form and constructs an usable object from it
+ * @returns Data extracted from form
+ * @version 1.0.0
+ * @author Simon Fäs
+ */
 function extractFormData() {
     return convertToNestedObject(Object.fromEntries(new FormData(form).entries().filter(([k, v]) => v != null || v != '')));
 }
 
+/**
+ * Code was copied by ChatGPT
+ * Explanation of the code:
+ * Initial Object: We start with an object that has a key using dot notation.
+ * 
+ * convertToNestedObject Function:
+ * Iteration: Loop through each key in the original object.
+ * Split Key: Split the key by the dot to get an array of keys.
+ * Construct Nested Object: Dynamically build the nested object using a temporary reference.
+ * Assign Value: Set the value at the appropriate nested level.
+ * Return Result: Return the newly constructed nested object.
+ *  
+ * @param {*} obj 
+ * @returns Nested object 
+ * @version 1.0.0
+ * @author ChatGPT
+ */
 function convertToNestedObject(obj) {
     let result = {};
 
@@ -56,40 +80,79 @@ function convertToNestedObject(obj) {
     return result;
 }
 
-function submit(event, ressource = "", id) {
+/**
+ * Function for submitting the data from the form
+ * @param {SubmitEvent} event SubmitEvent from form
+ * @param {string} ressource Name of the ressource which is being submitted
+ * @param {number} id Id of the submitted item
+ * @version 1.0.0
+ * @author Simon Fäs
+ */
+function submit(event, ressource, id = null) {
+    const resolve = (response) => {
+        if (response.ok) {
+            showTable(ressource);
+        } else {
+            errorHandler(response);
+        }
+    }
     event.preventDefault();
-    if(!id) {
-            httpPost(`${rootDir}/${ressource}`, extractFormData())
-        .catch(error => console.error(error))
-        .then(() => showTable(ressource));
-    } else {
+    if (!id && ressource) {
+        httpPost(`${rootDir}/${ressource}`, extractFormData())
+            .catch(error => console.error(error))
+            .then((response) => resolve(response));
+    } else if (ressource) {
         let data = extractFormData();
-        if(ressource === "ausleihe") {
+        if (ressource === "ausleihe") {
             data.ausleihedauer = data.ausleihedauer + 14;
         }
         httpPut(`${rootDir}/${ressource}`, data)
-        .catch(error => console.error(error))
-        .then(() => showTable(ressource));
+            .catch(error => console.error(error))
+            .then(response => resolve(response));
     }
 }
 
+/**
+ * Function to close and open menu
+ * @version 1.0.0
+ * @author Simon Fäs
+ */
 function openMenu() {
     navigation.style.display = navigation.style.display && navigation.style.display === "none" ? "flex" : "none";
 }
 
+/**
+ * Function to clear table and form content
+ * @version 1.0.0
+ * @author Simon Fäs
+ */
 function softReset() {
     form.replaceChildren();
     tableHead.replaceChildren();
     tableBody.replaceChildren();
 }
 
+/**
+ * Function to clear event listeners, 
+ * the table and form contents and make all contents invisible.
+ * @version 1.0.0
+ * @author Simon Fäs
+ */
 function reset() {
     softReset();
     form.removeEventListener("submit", form);
     tableContent.classList.add("notVisible");
     editContent.classList.add("notVisible");
+    searchBar.classList.add("notVisible");
+    searchBtn.classList.add("notVisible");
 }
 
+/**
+ * Function to open table view of a specific ressource
+ * @param {string} ressource Name of the ressource
+ * @version 1.0.0
+ * @author Simon Fäs
+ */
 function showTable(ressource) {
     if (!ressource) {
         return;
@@ -103,6 +166,12 @@ function showTable(ressource) {
     }
 }
 
+/**
+ * Function to open edit view of a specific ressource
+ * @param {string} ressource Name of the ressource
+ * @version 1.0.0
+ * @author Simon Fäs
+ */
 function showEdit(ressource) {
     if (!ressource) {
         return;
@@ -116,6 +185,13 @@ function showEdit(ressource) {
     }
 }
 
+/**
+ * Function to produce the buttons of the form
+ * @param {*} obj Object to edit
+ * @param {string} ressource Name of the resource to edit
+ * @version 1.0.0
+ * @author Simon Fäs
+ */
 function installButtons(obj, ressource) {
     const row = document.createElement("div");
     row.classList.add("row");
@@ -123,11 +199,11 @@ function installButtons(obj, ressource) {
     let cancelBtn = document.createElement("button");
 
     saveBtn.type = "submit";
-    saveBtn.classList.add("btn", "btnSuccess");
+    saveBtn.classList.add("btnSuccess");
     saveBtn.textContent = "Speichern";
     cancelBtn.addEventListener("click", () => showTable(ressource));
     cancelBtn.setAttribute("type", "button");
-    cancelBtn.classList.add("btn", "btnDanger");
+    cancelBtn.classList.add("btnDanger");
     cancelBtn.textContent = "Abbrechen";
 
     row.appendChild(saveBtn);
@@ -136,7 +212,7 @@ function installButtons(obj, ressource) {
         let deleteBtn = document.createElement("button");
         deleteBtn.addEventListener("click", () => confirmAndDelete(ressource === "ausleihe" ? obj?.medium?.id : obj?.id));
         deleteBtn.setAttribute("type", "button");
-        deleteBtn.classList.add("btn", "btnDanger");
+        deleteBtn.classList.add("btnDanger");
         deleteBtn.textContent = "Löschen";
         row.appendChild(deleteBtn);
     }
@@ -144,12 +220,17 @@ function installButtons(obj, ressource) {
     form.appendChild(row);
 }
 
-
+/**
+ * Function to load contents of the view "Ausleihe erstellen"
+ * @param {*} obj Object to edit
+ * @version 1.0.0
+ * @author Simon Fäs
+ */
 function linkToAusleiheErstellen(obj) {
     reset();
     editContent.classList.remove("notVisible");
     createForm(obj, "ausleihe", form, ausleiheAttributes);
-    if(obj && !(obj instanceof PointerEvent)) {
+    if (obj && !(obj instanceof PointerEvent)) {
         const row = document.createElement("div");
         row.classList.add("row");
         row.textContent = "Verlängern klicken, um Ausleihe, um 14 Tage zu verlängern";
@@ -158,26 +239,56 @@ function linkToAusleiheErstellen(obj) {
     installButtons(obj, "ausleihe");
 }
 
+/**
+ * Function to load contents of the view "Ausleihetabelle"
+ * @version 1.0.0
+ * @author Simon Fäs
+ */
 function linkToAusleiheTabelle() {
     reset();
     tableContent.classList.remove("notVisible");
     httpGet(`${rootDir}/ausleihe`, constructAusleiheTable);
 }
 
+/**
+ * Function to load contents of the view "Kunde erstellen"
+ * @param {*} obj Object to edit
+ * @version 1.0.0
+ * @author Simon Fäs
+ */
 function linkToKundeErstellen(obj) {
     reset();
     editContent.classList.remove("notVisible");
-    createForm(obj, "ausleihe", form, kundeAttributes);
+    if (obj && obj.geburtstag) {
+        obj.geburtstag = new Date(obj.geburtstag).toISOString().split("T")[0];
+    }
+    createForm(obj, "kunde", form, kundeAttributes);
     installButtons(obj, "kunde");
 }
 
+/**
+ * Function to load contents of the view "Kundentabelle"
+ * @param {string} [searchString=""] String to search for Objects
+ * @version 1.0.0
+ * @author Simon Fäs
+ */
 function linkToKundeTabelle(searchString = "") {
     reset();
     tableContent.classList.remove("notVisible");
+    searchBar.classList.remove("notVisible");
+    searchBtn.classList.remove("notVisible");
     searchString = searchBar.value && searchBar.value.trim() !== "" ? searchBar.value : searchString;
-    httpGet(`${rootDir}/kunde/nachname/${searchString ? searchString : ""}`, constructKundeTable);
+    if (searchString && searchString != "") {
+        httpGet(`${rootDir}/kunde/nachname/${searchString}`, constructKundeTable);
+    }
 }
 
+/**
+ * Function to load contents of the view "Medium erstellen"
+ * @param {*} obj Object to edit
+ * @version 1.0.0
+ * @author Simon Fäs
+ */
 function linkToMediumErstellen(obj) {
     reset();
     editContent.classList.remove("notVisible");
@@ -185,14 +296,29 @@ function linkToMediumErstellen(obj) {
     installButtons(obj, "medium");
 }
 
+/**
+ * Function to load contents of the view "Medientabelle"
+ * @version 1.0.0
+ * @author Simon Fäs
+ */
 function linkToMediumTabelle() {
     reset();
     tableContent.classList.remove("notVisible");
     httpGet(`${rootDir}/medium`, constructMediumTable);
 }
 
-function createForm(obj, ressource, form, attributes) {
-    form.addEventListener("submit", (event) => {submit(event, ressource, obj?.id)});
+/**
+ * Function to fill form with input elements
+ * @param {*} obj Object to edit
+ * @param {string} ressource Name of the ressource
+ * @param {HTMLFormElement} form HTML form element
+ * @param {Object[]} attributes Array of objects containing information about the input element.
+ * @see {@link ausleiheAttributes}, {@link mediumAttributes}, {@link kundeAttributes}
+ * @version 1.0.0
+ * @author Simon Fäs
+ */
+function createForm(obj = null, ressource, form, attributes) {
+    form.addEventListener("submit", (event) => { submit(event, ressource, obj?.id) });
     for (attribute of attributes) {
         const row = document.createElement("div");
         const label = document.createElement("label");
@@ -200,7 +326,7 @@ function createForm(obj, ressource, form, attributes) {
         row.classList.add("row");
         for (const [key, value] of Object.entries(attribute)) {
             if (key === "name") {
-                input.id =  value
+                input.id = value
                 input.name = value;
                 label.appendChild(document.createTextNode(value));
                 label.htmlFor = value;
@@ -209,7 +335,7 @@ function createForm(obj, ressource, form, attributes) {
                     input.readOnly = value;
                 }
             } else if (key === "var") {
-                input.id =  value
+                input.id = value
                 input.name = value;
                 label.htmlFor = value;
             } else {
@@ -218,7 +344,7 @@ function createForm(obj, ressource, form, attributes) {
         }
         try {
             input.value = obj && getValueByString(obj, attribute.var) ? getValueByString(obj, attribute.var) : obj[attribute.name] ? obj[attribute.name] : "";
-        } catch (error) {}
+        } catch (error) { }
 
         row.appendChild(label);
         row.appendChild(input);
@@ -226,9 +352,14 @@ function createForm(obj, ressource, form, attributes) {
     }
 }
 
+/**
+ * Function to get a value from an nested object with a string
+ * @version 1.0.0
+ * @author Simon Fäs
+ */
 function getValueByString(obj, attrArr = "") {
     let e = obj;
-    for(attr of attrArr.split(".")) {
+    for (attr of attrArr.split(".")) {
         e = e ? e[attr] : null;
     }
     return e ? e.toString() : "";

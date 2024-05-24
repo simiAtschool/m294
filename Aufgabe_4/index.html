@@ -15,7 +15,7 @@
     <header id="header" class="space-between">
         <h1 style="margin: 0;">Applikation</h1>
 
-        <button class="vCenterButton btn" onclick="openMenu()">
+        <button class="vCenterButton" onclick="openMenu()">
             <span class="material-symbols-outlined">
                 menu
             </span>
@@ -25,12 +25,12 @@
 
     <main>
         <nav id="nav" style="display: none;" onmouseleave="openMenu()">
-            <button class="btn" onclick="linkToKundeTabelle()">Kundentabelle</button>
-            <button class="btn" onclick="linkToKundeErstellen(null)">Kunde erstellen</button>
-            <button class="btn" onclick="linkToMediumTabelle()">Medientabelle</button>
-            <button class="btn" onclick="linkToMediumErstellen(null)">Medium erstellen</button>
-            <button class="btn" onclick="linkToAusleiheTabelle()">Ausleihetabelle</button>
-            <button class="btn" onclick="linkToAusleiheErstellen(null)">Ausleihe erstellen</button>
+            <button onclick="linkToKundeTabelle()">Kundentabelle</button>
+            <button onclick="linkToKundeErstellen(null)">Kunde erstellen</button>
+            <button onclick="linkToMediumTabelle()">Medientabelle</button>
+            <button onclick="linkToMediumErstellen(null)">Medium erstellen</button>
+            <button onclick="linkToAusleiheTabelle()">Ausleihetabelle</button>
+            <button onclick="linkToAusleiheErstellen(null)">Ausleihe erstellen</button>
         </nav>
         <!-- Search and things -->
 
@@ -38,9 +38,9 @@
             <div class="space-between">
                 <div>
                     <input id="searchBar" type="text">
-                    <button id="searchBtn" onclick="linkToKundeTabelle()" style="margin-left: 1em;">Suchen</button>
+                    <button id="searchBtn" class="btn" onclick="linkToKundeTabelle()" style="margin-left: 1em;">Suchen</button>
                 </div>
-                <button id="btnCreate">Erstellen</button>
+                <button id="btnCreate" class="btn">Erstellen</button>
             </div>
             <table>
                 <thead id="tableHead"></thead>
@@ -49,20 +49,7 @@
         </div>
         
         <div id="mainEdit" class="main centerItems notVisible">
-            <form id="form" style="width: 50%;">
-                <!-- <div class="row">
-                <label for="a">Hallo</label>
-                <input id="a" name="a" type="text" required>
-            </div>
-            <div class="row">
-                <label for="b">Hallo</label>
-                <input id="b" name="b" type="number" max="65535" required>
-            </div>
-            <div class="row">
-                <button id="sub" type="button">Submit</button>
-            </div> -->
-            </form>
-            
+            <form id="form" style="width: 50%;"></form>  
         </div>
 
     </main>

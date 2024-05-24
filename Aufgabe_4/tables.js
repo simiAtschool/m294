@@ -2,12 +2,23 @@ const ausleiheHeader = ["Medium-ID", "Kunden-ID", "Ausleihedatum", "Rückgabedat
 const mediumHeader = ["ID", "Titel", "Autor", "", ""];
 const kundeHeader = ["ID", "Name", "E-Mail", "Adresse", "", ""];
 
+/**
+ * Function to create table head cell
+ * @param {string} text Text for table head cell
+ * @returns Table head cell
+ */
 function createHeaderCell(text) {
     const cell = document.createElement("th");
     cell.appendChild(document.createTextNode(text ? text : ""));
     return cell;
 }
 
+/**
+ * Function to build table containing the ressource Ausleihe
+ * @param {any[]} data Array of objects 
+ * @version 1.0.0
+ * @author Simon Fäs
+ */
 function constructAusleiheTable(data) {
 
     if (!(data instanceof Array)) {
@@ -38,6 +49,14 @@ function constructAusleiheTable(data) {
 
 }
 
+/**
+ * Helper function for {@link constructAusleiheTable}. Used to create cell for given column
+ * @param {*} obj Data, which should be represented
+ * @param {number} cellNum Number of the needed cell
+ * @returns Cell with content
+ * @version 1.0.0
+ * @author Simon Fäs
+ */
 function getAusleiheText(obj, cellNum) {
     const addDays = (date, days) => {
         date.setDate(date.getDate() + days);
@@ -62,6 +81,12 @@ function getAusleiheText(obj, cellNum) {
     }
 }
 
+/**
+ * Function to build table containing the ressource Medium
+ * @param {any[]} data Array of objects 
+ * @version 1.0.0
+ * @author Simon Fäs
+ */
 function constructMediumTable(data) {
 
     if (!(data instanceof Array)) {
@@ -93,6 +118,14 @@ function constructMediumTable(data) {
 
 }
 
+/**
+ * Helper function for {@link constructMediumTable}. Used to create cell for given column
+ * @param {*} obj Data, which should be represented
+ * @param {number} cellNum Number of the needed cell
+ * @returns Cell with content
+ * @version 1.0.0
+ * @author Simon Fäs
+ */
 function getMediumText(obj, cellNum) {
     switch (cellNum) {
         case 1:
@@ -110,6 +143,13 @@ function getMediumText(obj, cellNum) {
     }
 }
 
+
+/**
+ * Function to build table containing the ressource Kunde
+ * @param {any[]} data Array of objects 
+ * @version 1.0.0
+ * @author Simon Fäs
+ */
 function constructKundeTable(data) {
 
     if (!(data instanceof Array)) {
@@ -141,6 +181,14 @@ function constructKundeTable(data) {
 
 }
 
+/**
+ * Helper function for {@link constructKundeTable}. Used to create cell for given column
+ * @param {*} obj Data, which should be represented
+ * @param {number} cellNum Number of the needed cell
+ * @returns Cell with content
+ * @version 1.0.0
+ * @author Simon Fäs
+ */
 function getKundeText(obj, cellNum) {
     switch (cellNum) {
         case 1:
@@ -160,27 +208,56 @@ function getKundeText(obj, cellNum) {
     }
 }
 
+/**
+ * Function to create edit button
+ * @param {*} obj Object to be edited
+ * @param {Function} linkFunction Function to change view
+ * @returns Button element with event listener to change view
+ * @version 1.0.0
+ * @author Simon Fäs
+ */
 function editBtn(obj, linkFunction) {
     const editBtn = document.createElement("button");
     editBtn.textContent = "edit";
-    editBtn.classList.add("btn", "material-symbols-outlined");
+    editBtn.classList.add("material-symbols-outlined");
     editBtn.addEventListener("click", () => { linkFunction(obj) });
     return editBtn;
 }
 
+/**
+ * Function to create delete button
+ * @param {*} obj Object to be deleted
+ * @param {string} ressource Name of the resource of the element to be deleted
+ * @returns Button element with event listener to call {@link confirmAndDelete}
+ * @version 1.0.0
+ * @author Simon Fäs
+ */
 function deleteBtn(obj, ressource) {
     const deleteBtn = document.createElement("button");
     deleteBtn.textContent = "delete";
-    deleteBtn.classList.add("btn", "material-symbols-outlined");
+    deleteBtn.classList.add("material-symbols-outlined");
     deleteBtn.addEventListener("click", () => { confirmAndDelete(obj, ressource) });
     return deleteBtn;
 }
 
+/**
+ * Function to confirm deleting an element. After confirmation, the element will be deleted
+ * @param {*} obj Object to be deleted
+ * @param {string} ressource Name of the resource of the element to be deleted
+ * @version 1.0.0
+ * @author Simon Fäs
+ */
 async function confirmAndDelete(obj, ressource) {
     result = await confirm("Wollen Sie wirklich diesen Eintrag löschen?").valueOf();
     if (result) {
         httpDelete(`${rootDir}/${ressource}`, obj.id)
             .catch(error => console.error(error))
-            .then(() => showTable(ressource));
+            .then(() => (response) => {
+                if (response.ok) {
+                    showTable(ressource);
+                } else {
+                    errorHandler(response);
+                }
+            });
     }
 }

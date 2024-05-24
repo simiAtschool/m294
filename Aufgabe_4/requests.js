@@ -1,9 +1,12 @@
 const rootDir = "http://192.168.1.190:8080/bibliothek";
 
-function test() {
-    console.log("Success")
-}
-
+/**
+ * Function to send request with HTTP GET Method 
+ * @param {string} url URL 
+ * @param {Function} consumerFunction Function which consumes the retrieved data
+ * @version 1.0.0
+ * @author Simon Fäs
+ */
 function httpGet(url, consumerFunction) {
     fetch(url).then(response => {
         if (response.ok) {
@@ -14,37 +17,59 @@ function httpGet(url, consumerFunction) {
     });
 }
 
-async function httpPost(url = "", data = {}) {
-    // Default options are marked with *
+/**
+ * Function to send request with HTTP POST Method 
+ * @param {string} url URL 
+ * @param {any} data Content of the body
+ * @version 1.0.0
+ * @author Simon Fäs
+ */
+async function httpPost(url, data = {}) {
     const response = await fetch(url, {
-        method: "POST", // *GET, POST, PUT, DELETE, etc.
+        method: "POST", 
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify(data), // body data type must match "Content-Type" header
+        body: JSON.stringify(data),
     });
     return response.json(); // parses JSON response into native JavaScript objects
 }
 
-async function httpPut(url = "", data = {}) {
-    // Default options are marked with *
+/**
+ * Function to send request with HTTP PUT Method 
+ * @param {string} url URL 
+ * @param {any} data Content of the body
+ * @version 1.0.0
+ * @author Simon Fäs
+ */
+async function httpPut(url, data = {}) {
     const response = await fetch(url, {
-        method: "PUT", // *GET, POST, PUT, DELETE, etc.
+        method: "PUT", 
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify(data), // body data type must match "Content-Type" header
+        body: JSON.stringify(data),
     });
     return response.json(); // parses JSON response into native JavaScript objects
 }
 
-async function httpDelete(url = "", id) {
-    // Default options are marked with *
+/**
+ * Function to send request with HTTP DELETE Method 
+ * @param {string} url URL 
+ * @param {number|string} id ID of the to be deleted element
+ * @version 1.0.0
+ * @author Simon Fäs
+ */
+async function httpDelete(url, id) {
     await fetch(`${url}/${id}`, {method: "DELETE"});
 }
 
+/**
+ * Function to handle HTTP-Errors
+ * @param {Response} error Response-Object with the needed information
+ */
 function errorHandler(error = new Response()) {
-    if(error.statusText.trim().length === 0) {
+    if(error?.status || error?.statusText?.trim()?.length === 0) {
         let text = "";
         if(error.status === 404) {
             text = "Objekt nicht gefunden";

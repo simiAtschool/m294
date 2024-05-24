@@ -5,7 +5,13 @@ function test() {
 }
 
 function httpGet(url, consumerFunction) {
-    fetch(url).then(response => response.json().then(data => consumerFunction(data)));
+    fetch(url).then(response => {
+        if (response.ok) {
+            response.json().then(data => consumerFunction(data))    
+        } else {
+            errorHandler(response);
+        }
+    });
 }
 
 async function httpPost(url = "", data = {}) {
@@ -35,4 +41,20 @@ async function httpPut(url = "", data = {}) {
 async function httpDelete(url = "", id) {
     // Default options are marked with *
     await fetch(`${url}/${id}`, {method: "DELETE"});
+}
+
+function errorHandler(error = new Response()) {
+    if(error.statusText.trim().length === 0) {
+        let text = "";
+        if(error.status === 404) {
+            text = "Objekt nicht gefunden";
+        } else if(error.status === 409) {
+            text = "Konflikt. Objekt besteht bereits";
+        } else if(error.status === 500) {
+            text = "Interner Server-Error";
+        }
+        window.alert(`HTTP-Code ${error.status}: ${text}`);
+    } else {
+        window.alert(`HTTP-Code ${error.status}: ${error.statusText}`);
+    }
 }

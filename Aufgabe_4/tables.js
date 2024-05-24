@@ -1,5 +1,6 @@
-const ausleiheHeader = ["Medium-ID", "Ausleihe-ID", "Ausleihedatum", "Rückgabedatum", "", ""];
+const ausleiheHeader = ["Medium-ID", "Kunden-ID", "Ausleihedatum", "Rückgabedatum", "", ""];
 const mediumHeader = ["ID", "Titel", "Autor", "", ""];
+const kundeHeader = ["ID", "Name", "E-Mail", "Adresse", "", ""];
 
 function createHeaderCell(text) {
     const cell = document.createElement("th");
@@ -109,6 +110,56 @@ function getMediumText(obj, cellNum) {
     }
 }
 
+function constructKundeTable(data) {
+
+    if (!(data instanceof Array)) {
+        return;
+    }
+
+    softReset();
+
+    btnCreate.addEventListener("click", () => linkToKundeErstellen());
+    const row = document.createElement("tr");
+    kundeHeader.forEach(element => row.appendChild(createHeaderCell(element)));
+    tableHead.appendChild(row);
+
+    // creating all cells
+    for (let obj of data) {
+
+        // creates a table row
+        const row = document.createElement("tr");
+
+        for (let index = 1; index <= 6; index++) {
+            const cell1 = document.createElement("td");
+            cell1.appendChild(getKundeText(obj, index));
+            row.appendChild(cell1);
+        }
+
+        // add the row to the end of the table body
+        tableBody.appendChild(row);
+    }
+
+}
+
+function getKundeText(obj, cellNum) {
+    switch (cellNum) {
+        case 1:
+            return document.createTextNode(obj.id ? obj.id : "");
+        case 2:
+            return document.createTextNode(obj.vorname && obj.nachname ? `${obj.vorname} ${obj.nachname}` : "");
+        case 3:
+            return document.createTextNode(obj.email ? obj.email : "");
+        case 4:
+            return document.createTextNode(obj?.adresse?.adresse ? obj?.adresse?.adresse : "");
+        case 5:
+            return editBtn(obj, linkToKundeErstellen);
+        case 6:
+            return deleteBtn(obj, linkToKundeTabelle, "kunde");
+        default:
+            return document.createTextNode("");
+    }
+}
+
 function editBtn(obj, linkFunction) {
     const editBtn = document.createElement("button");
     editBtn.textContent = "edit";
@@ -127,9 +178,9 @@ function deleteBtn(obj, ressource) {
 
 async function confirmAndDelete(obj, ressource) {
     result = await confirm("Wollen Sie wirklich diesen Eintrag löschen?").valueOf();
-    if(result) {
+    if (result) {
         httpDelete(`${rootDir}/${ressource}`, obj.id)
-        .catch(error => console.error(error))
-        .then(() => showTable(ressource));
+            .catch(error => console.error(error))
+            .then(() => showTable(ressource));
     }
 }

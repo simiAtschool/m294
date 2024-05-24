@@ -1,4 +1,0 @@
-- All variables in camel-case, beginning with a lower-case letter. Exceptions are private class variables, beginning with an underscore.
-- Each function, class and method has to be documented, except get and set methods.
-- Each "statement" has to be ended with a semicolon
-- 

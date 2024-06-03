@@ -1,4 +1,4 @@
-const rootDir = "http://192.168.1.190:8080/bibliothek";
+const rootDir = "http://192.168.1.90:8080/bibliothek";
 
 /**
  * Function to send request with HTTP GET Method 
@@ -8,13 +8,15 @@ const rootDir = "http://192.168.1.190:8080/bibliothek";
  * @author Simon Fäs
  */
 function httpGet(url, consumerFunction) {
-    fetch(url).then(response => {
+    fetch(url, {headers: {"Authorization": authString}})
+    .then(response => {
         if (response.ok) {
             response.json().then(data => consumerFunction(data))    
         } else {
             errorHandler(response);
         }
-    });
+    })
+    .catch(error => console.error(error));
 }
 
 /**
@@ -28,10 +30,11 @@ async function httpPost(url, data = {}) {
     const response = await fetch(url, {
         method: "POST", 
         headers: {
+            "Authorization": authString,
             "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
-    });
+    }).catch(error => console.error(error));
     return response.json(); // parses JSON response into native JavaScript objects
 }
 
@@ -46,10 +49,11 @@ async function httpPut(url, data = {}) {
     const response = await fetch(url, {
         method: "PUT", 
         headers: {
+            "Authorization": authString,
             "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
-    });
+    }).catch(error => console.error(error));
     return response.json(); // parses JSON response into native JavaScript objects
 }
 
@@ -61,7 +65,7 @@ async function httpPut(url, data = {}) {
  * @author Simon Fäs
  */
 async function httpDelete(url, id) {
-    await fetch(`${url}/${id}`, {method: "DELETE"});
+    await fetch(`${url}/${id}`, {method: "DELETE", headers: {"Authorization": authString}}).catch(error => console.error(error));
 }
 
 /**
@@ -77,6 +81,8 @@ function errorHandler(error = new Response()) {
             text = "Konflikt. Objekt besteht bereits";
         } else if(error.status === 500) {
             text = "Interner Server-Error";
+        } else if(error.status !== 401 || error.status !== 403) {
+            text = "Keine Berechtigung"
         }
         window.alert(`HTTP-Code ${error.status}: ${text}`);
     } else {

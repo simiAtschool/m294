@@ -1,12 +1,16 @@
 const navigation = document.getElementById('nav');
 const tableContent = document.getElementById("mainTable");
 const editContent = document.getElementById("mainEdit");
+const loginContent = document.getElementById("mainLogin");
 const tableHead = document.getElementById("tableHead");
 const tableBody = document.getElementById("tableBody");
 const form = document.getElementById("form");
 const btnCreate = document.getElementById("btnCreate");
 const searchBar = document.getElementById("searchBar");
 const searchBtn = document.getElementById("searchBtn");
+const btnMenu = document.getElementById("btnMenu");
+const loginName = document.getElementById("inputName");
+const loginPassword = document.getElementById("inputPassword");
 const mediumAttributes = [
     { name: "titel", type: "text", required: true },
     { name: "autor", type: "text", required: true },
@@ -30,6 +34,7 @@ const kundeAttributes = [
     { name: "Ort", var: "adresse.ort", type: "text", required: true },
     { name: "Postleitzahl", var: "adresse.zip", type: "text", required: true },
 ]
+let authString = "";
 
 /**
  * Extracts values from form and constructs an usable object from it
@@ -143,6 +148,7 @@ function reset() {
     form.removeEventListener("submit", form);
     tableContent.classList.add("notVisible");
     editContent.classList.add("notVisible");
+    loginContent.classList.add("notVisible");
     searchBar.classList.add("notVisible");
     searchBtn.classList.add("notVisible");
 }
@@ -364,3 +370,27 @@ function getValueByString(obj, attrArr = "") {
     }
     return e ? e.toString() : "";
 }
+
+/**
+ * Function to log user in
+ * @version 1.0.0
+ * @author Simon Fäs
+ */
+function tryLogin() {
+    tmp = `${loginName.value}:${loginPassword.value}`;
+    authString = `Basic ${btoa(tmp)}`;
+    fetch(`${rootDir}/ausleihe`, {
+        headers: {
+            "Authorization": authString,
+        }
+    }).then(response => {
+        if(response.ok) {
+            loginContent.classList.add("notVisible");
+            btnMenu.classList.remove("notVisible");
+            alert("Login erfolgreich");
+        } else {
+            alert("Logindaten ungültig");
+        }
+    })
+}
+

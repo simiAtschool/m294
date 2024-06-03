@@ -15,7 +15,7 @@
     <header id="header" class="space-between">
         <h1 style="margin: 0;">Applikation</h1>
 
-        <button class="vCenterButton" onclick="openMenu()">
+        <button id="btnMenu" class="vCenterButton notVisible" onclick="openMenu()">
             <span class="material-symbols-outlined">
                 menu
             </span>
@@ -31,6 +31,7 @@
             <button onclick="linkToMediumErstellen(null)">Medium erstellen</button>
             <button onclick="linkToAusleiheTabelle()">Ausleihetabelle</button>
             <button onclick="linkToAusleiheErstellen(null)">Ausleihe erstellen</button>
+            <button onclick="location.reload();">Logout</button>
         </nav>
         <!-- Search and things -->
 
@@ -52,6 +53,21 @@
             <form id="form" style="width: 50%;"></form>  
         </div>
 
+        <div id="mainLogin" class="main centerItems">
+            <div style="width: 50%;">
+                <div class="row">
+                    <label for="inputName">Name</label>
+                    <input id="inputName">
+                </div>
+                <div class="row">
+                    <label for="inputPassword">Passwort</label>
+                    <input id="inputPassword" type="password">
+                </div>
+                <div class="row" style="justify-content: right;">
+                    <button onclick="tryLogin()" class="btnSuccess">Einloggen</button>
+                </div>
+            </div>
+        </div>
     </main>
 
 
